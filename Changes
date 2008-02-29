@@ -1,0 +1,15 @@
+Revision history for Perl extension Osgood::Client.
+
+1.0.4
+		- Release to the world.
+1.0.3
+    - Add EventList::get_highest_id
+1.0.2
+    - Query method for retrieving events
+1.0.1
+    - Allow empty EventLists in the Serializer and Deserializer
+    - Add (optional) id addtribute to Event
+    - Add iterator getter to EventList
+
+1.0.0
+    - Rawr
