@@ -15,7 +15,7 @@ has 'url' => ( is => 'rw', isa => 'URI', default => sub { new URI('http://localh
 has 'list' => ( is => 'rw', isa => 'Osgood::EventList' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
 
-our $VERSION = '1.0.4';
+our $VERSION = '1.0.5';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
@@ -30,7 +30,8 @@ queue.
 =head1 SYNOPSIS
 
   my $event = new Osgood::Event(
-	object => 'Foo', action => 'create',
+	object => 'Foo',
+	action => 'create',
 	date_occurred => DateTime->now()
   );
   my $list = new Osgood::EventList(events => [ $event ])
@@ -113,7 +114,7 @@ Query the Osgood server for events.  Takes a hashref in the following format:
 
 At least one key is required.
 
-A true of false value is returned to denote the success of failure of the
+A true or false value is returned to denote the success of failure of the
 query.  If false, then the error will be set in the error accessor.  On
 success the list may be retrived from the list accessor.
 
@@ -153,8 +154,7 @@ The number of seconds to wait before timing out.
 
 =item url
 
-The host on which the Osgood queue we should contact is running.  Expects an
-instance of URI.
+The url of the Osgood queue we should contact.  Expects an instance of URI.
 
 =back
 

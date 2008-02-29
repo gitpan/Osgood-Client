@@ -26,3 +26,4 @@ t/03_client.t
 t/04_serialization.t
 t/05_emptylist.t
 t/06_get_highest_id.t
+t/10server.t

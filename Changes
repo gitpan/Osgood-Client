@@ -1,5 +1,7 @@
 Revision history for Perl extension Osgood::Client.
 
+1.0.5
+		- Add some more tests with release of Osgood-Server
 1.0.4
 		- Release to the world.
 1.0.3
