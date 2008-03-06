@@ -12,7 +12,7 @@ use XML::XPath;
 
 my $list = new Osgood::EventList;
 
-my $event = new Osgood::Event(object => 'Test', action => 'create');
+my $event = new Osgood::Event(object => 'Test', action => 'create', params => { key3 => undef });
 $event->id(101);
 $event->set_param('key1', 'value1');
 $event->set_param('key2', 'value2');
@@ -25,6 +25,8 @@ my $ser = new Osgood::EventList::Serializer(list => $list);
 isa_ok($ser, 'Osgood::EventList::Serializer', 'isa Osgood::EventList::Serializer');
 
 my $xml = $ser->serialize();
+
+diag($xml);
 
 my $xp = new XML::XPath(xml => $xml);
 
@@ -47,13 +49,13 @@ my $evdnd = $xp->find('/eventlist/events/event/date_occurred');
 cmp_ok($evdnd->size(), '==', 2, 'Two dates');
 
 my $evpnd = $xp->find('/eventlist/events/event/params/param');
-cmp_ok($evpnd->size(), '==', 2, '2 params');
+cmp_ok($evpnd->size(), '==', 3, '3 params');
 
 my $evpnnd = $xp->find('/eventlist/events/event/params/param/name');
-cmp_ok($evpnnd->size(), '==', 2, '2 param names');
+cmp_ok($evpnnd->size(), '==', 3, '3 param names');
 
 my $evpvnd = $xp->find('/eventlist/events/event/params/param/value');
-cmp_ok($evpvnd->size(), '==', 2, '2 param valus');
+cmp_ok($evpvnd->size(), '==', 3, '3 param values');
 
 my $des = new Osgood::EventList::Deserializer(xml => $xml);
 my $slist = $des->deserialize();

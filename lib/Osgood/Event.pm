@@ -71,7 +71,7 @@ Allows setting a single name value pair directly.
 sub set_param {
 	my $self	= shift();
 	my $key		= shift() or die('Must supply a key and value to set_param.');
-	my $value	= shift() or die('Must supply a key and value to set_param.');
+	my $value	= shift();
 
 	$self->params->{$key} = $value;
 }

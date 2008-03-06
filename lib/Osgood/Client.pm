@@ -15,7 +15,7 @@ has 'url' => ( is => 'rw', isa => 'URI', default => sub { new URI('http://localh
 has 'list' => ( is => 'rw', isa => 'Osgood::EventList' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
 
-our $VERSION = '1.0.5';
+our $VERSION = '1.0.6';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
