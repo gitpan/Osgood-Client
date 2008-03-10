@@ -48,7 +48,6 @@ sub deserialize {
 	my $list = new Osgood::EventList();
 
 	my $xp = new XML::XPath(xml => $self->xml());
-	use Data::Dumper;
 	my $events = $xp->find('/eventlist/events/event');
 	foreach my $node ($events->get_nodelist()) {
 

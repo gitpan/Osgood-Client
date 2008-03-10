@@ -6,6 +6,7 @@ use HTTP::Request;
 use LWP::UserAgent;
 use URI;
 use XML::XPath;
+use CGI;
 
 use Osgood::EventList::Deserializer;
 use Osgood::EventList::Serializer;
@@ -15,7 +16,7 @@ has 'url' => ( is => 'rw', isa => 'URI', default => sub { new URI('http://localh
 has 'list' => ( is => 'rw', isa => 'Osgood::EventList' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
 
-our $VERSION = '1.0.6';
+our $VERSION = '1.0.7';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
@@ -82,7 +83,7 @@ sub send {
 
 	my $req = new HTTP::Request(POST => $self->url->canonical().'/event/add');
 	$req->content_type('application/x-www-form-urlencoded');
-	$req->content("xml=$xml");
+	$req->content('xml=' . CGI::escape($xml));
 
 	my $res = $ua->request($req);
 

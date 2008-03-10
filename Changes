@@ -1,5 +1,7 @@
 Revision history for Perl extension Osgood::Client.
 
+1.0.7
+		- Encode output
 1.0.6
 		- Allow undefined parameter values in Event
 1.0.5
