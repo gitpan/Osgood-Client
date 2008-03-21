@@ -1,8 +1,7 @@
-use Test::More tests => 7;
+use Test::More tests => 4;
 
 BEGIN {
-	use_ok('Osgood::EventList::Serializer');
-	use_ok('Osgood::EventList::Deserializer');
+	use_ok('Osgood::EventList::Serialize::JSON');
 }
 
 use Osgood::Event;
@@ -12,21 +11,12 @@ use XML::XPath;
 
 my $list = new Osgood::EventList;
 
-my $ser = new Osgood::EventList::Serializer(list => $list);
-isa_ok($ser, 'Osgood::EventList::Serializer', 'isa Osgood::EventList::Serializer');
+my $ser = new Osgood::EventList::Serialize::JSON();
+isa_ok($ser, 'Osgood::EventList::Serialize::JSON', 'isa Osgood::EventList::Serialize::JSON');
 
-my $xml = $ser->serialize();
+my $json = $ser->serialize($list);
 
-my $xp = new XML::XPath(xml => $xml);
-
-my $evsnd = $xp->find('/eventlist/events');
-cmp_ok($evsnd->size(), '==', 1, 'One events node');
-
-my $evnd = $xp->find('/eventlist/events/event');
-cmp_ok($evnd->size(), '==', 0, 'Zero event nodes');
-
-my $des = new Osgood::EventList::Deserializer(xml => $xml);
-my $slist = $des->deserialize();
+my $slist = $ser->deserialize($json);
 isa_ok($slist, 'Osgood::EventList', 'isa Osgood::EventList');
 
 cmp_ok($slist->size(), '==', 0, 'Zero events');

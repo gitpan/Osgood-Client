@@ -30,7 +30,7 @@ cmp_ok($list->size(), 'eq', $retval, 'add correct number');
 
 $client->list(undef);
 
-my $retval = $client->query({
+$retval = $client->query({
      object => 'Person',
      action => 'sneezed',
 });
@@ -39,8 +39,8 @@ ok($retval, 'query succeeded');
 isa_ok($client->list(), 'Osgood::EventList');
 ok($client->list->size(), 'got events');
 my $iterator = $client->list->iterator();
-my $event = $iterator->next();
-isa_ok($event, 'Osgood::Event');
-cmp_ok($event->object(), 'eq', 'Person', 'Event object');
-cmp_ok($event->action(), 'eq', 'sneezed', 'Event action');
+my $nevent = $iterator->next();
+isa_ok($nevent, 'Osgood::Event');
+cmp_ok($nevent->object(), 'eq', 'Person', 'Event object');
+cmp_ok($nevent->action(), 'eq', 'sneezed', 'Event action');
 

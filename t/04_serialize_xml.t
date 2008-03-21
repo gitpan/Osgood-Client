@@ -1,8 +1,9 @@
-use Test::More tests => 23;
+use Test::More;
 
 BEGIN {
-	use_ok('Osgood::EventList::Serializer');
-	use_ok('Osgood::EventList::Deserializer');
+    eval "use XML::DOM";
+    plan $@ ? (skip_all => 'Needs XML::DOM for testing') : ( tests => 22 );
+	use_ok('Osgood::EventList::Serialize::XML');
 }
 
 use Osgood::Event;
@@ -21,12 +22,10 @@ $list->add_to_events($event);
 my $event2 = new Osgood::Event(object => 'Test2', action => 'create2');
 $list->add_to_events($event2);
 
-my $ser = new Osgood::EventList::Serializer(list => $list);
-isa_ok($ser, 'Osgood::EventList::Serializer', 'isa Osgood::EventList::Serializer');
+my $ser = new Osgood::EventList::Serialize::XML();
+isa_ok($ser, 'Osgood::EventList::Serialize::XML', 'isa Osgood::EventList::Serialize::XML');
 
-my $xml = $ser->serialize();
-
-diag($xml);
+my $xml = $ser->serialize($list);
 
 my $xp = new XML::XPath(xml => $xml);
 
@@ -57,8 +56,7 @@ cmp_ok($evpnnd->size(), '==', 3, '3 param names');
 my $evpvnd = $xp->find('/eventlist/events/event/params/param/value');
 cmp_ok($evpvnd->size(), '==', 3, '3 param values');
 
-my $des = new Osgood::EventList::Deserializer(xml => $xml);
-my $slist = $des->deserialize();
+my $slist = $ser->deserialize($xml);
 
 cmp_ok($slist->size(), '==', 2, '2 Events in Deserialized list');
 cmp_ok($slist->events->[0]->id(), '==', 101, 'Id');

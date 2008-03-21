@@ -8,15 +8,15 @@ use URI;
 use XML::XPath;
 use CGI;
 
-use Osgood::EventList::Deserializer;
-use Osgood::EventList::Serializer;
+use Osgood::EventList::Serialize::JSON;
 
 has 'error' => ( is => 'rw', iss => 'Str' );
 has 'url' => ( is => 'rw', isa => 'URI', default => sub { new URI('http://localhost'); });
 has 'list' => ( is => 'rw', isa => 'Osgood::EventList' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
+has 'serializer' => ( is => 'rw', isa => 'Osgood::EventList::Serialize', default => sub { new Osgood::EventList::Serialize::JSON() });
 
-our $VERSION = '1.0.7';
+our $VERSION = '1.1.0';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
@@ -30,9 +30,11 @@ queue.
 
 =head1 SYNOPSIS
 
+To send some events:
+
   my $event = new Osgood::Event(
-	object => 'Foo',
-	action => 'create',
+	object => 'Moose',
+	action => 'farted',
 	date_occurred => DateTime->now()
   );
   my $list = new Osgood::EventList(events => [ $event ])
@@ -46,6 +48,24 @@ queue.
   } else {
     print "Failure :(\n";
   }
+
+To query for events
+
+  use DateTime;
+  use Osgood::Client;
+  use URI;
+
+  my $client = new Osgood::Client(
+      url => new URI('http://localhost:3000'),
+  );
+  $client->query({ object => 'Moose', action => 'farted' });
+  if($client->list->size() == 1) {
+      print "Success\n";
+  } else {
+      print "Failure\n";
+  }
+
+
 
 =head1 METHODS
 
@@ -76,14 +96,14 @@ Send events to the server.
 sub send {
 	my $self = shift();
 
-	my $serializer = new Osgood::EventList::Serializer(list => $self->list());
-  	my $xml = $serializer->serialize();
+    # my $serializer = new Osgood::EventList::Serializer(list => $self->list());
+  	my $ser = $self->serializer->serialize($self->list());
 
 	my $ua = new LWP::UserAgent();
 
 	my $req = new HTTP::Request(POST => $self->url->canonical().'/event/add');
 	$req->content_type('application/x-www-form-urlencoded');
-	$req->content('xml=' . CGI::escape($xml));
+	$req->content('ser=' . CGI::escape($ser));
 
 	my $res = $ua->request($req);
 
@@ -108,9 +128,9 @@ Query the Osgood server for events.  Takes a hashref in the following format:
 
   {
     id => X,
-	object => 'obj',
-	action => 'foo',
-	date => '2007-12-11'
+    object => 'obj',
+    action => 'foo',
+    date => '2007-12-11'
   }
 
 At least one key is required.
@@ -139,8 +159,9 @@ sub query {
 
 	if($res->is_success()) {
 
-		my $deserializer = new Osgood::EventList::Deserializer(xml => $res->content());
-		$self->list($deserializer->deserialize());
+        # my $deserializer = new Osgood::EventList::Deserializer(xml => $res->content());
+
+		$self->list($self->serializer->deserialize($res->content()));
 
 		return 1;
 	} else {
@@ -158,6 +179,17 @@ The number of seconds to wait before timing out.
 The url of the Osgood queue we should contact.  Expects an instance of URI.
 
 =back
+
+=head1 PERFORMANCE
+
+Originally Osgood used a combination of XML::DOM and XML::XPath for
+serialization.  After some testing it has switched to using JSON, as JSON::XS
+is considerably faster.  In tests on my machine (dual quad-core xeon) it takes
+about 10 seconds to deserialize 10_000 simple events.
+
+Please keep in mind that the sending of events will also have a cost, as
+insertion into the database takes time.  See the accompanying PERFORMANCE
+section of Osgood::Server
 
 =head1 AUTHOR
 
