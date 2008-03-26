@@ -55,6 +55,10 @@ sub add_to_events {
 
 Set/Get the ArrayRef of events in this list.
 
+=item iterator
+
+Returns a MooseX::Iterator for iterating over events.
+
 =item size
 
 Returns the number of events in this list.

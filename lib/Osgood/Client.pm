@@ -16,7 +16,7 @@ has 'list' => ( is => 'rw', isa => 'Osgood::EventList' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
 has 'serializer' => ( is => 'rw', isa => 'Osgood::EventList::Serialize', default => sub { new Osgood::EventList::Serialize::JSON() });
 
-our $VERSION = '1.1.0';
+our $VERSION = '1.1.1';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
@@ -86,7 +86,7 @@ Creates a new Osgood::Client object.
 =item list
 
 Set/Get the EventList.  For sending events, you should set this.  For
-retrieving them, this will be populated after querying the queue.
+retrieving them, this will be populated by query() returns.
 
 =item send
 
@@ -159,8 +159,6 @@ sub query {
 
 	if($res->is_success()) {
 
-        # my $deserializer = new Osgood::EventList::Deserializer(xml => $res->content());
-
 		$self->list($self->serializer->deserialize($res->content()));
 
 		return 1;
@@ -177,6 +175,17 @@ The number of seconds to wait before timing out.
 =item url
 
 The url of the Osgood queue we should contact.  Expects an instance of URI.
+
+=item error
+
+Returns the error message (if there was one) for this client.  This should
+be called if query() or send() do not return what you expect.
+
+=item serializer
+
+Allows you to set a custom serializer object.  JSON is the default, but you
+could use the XML serializer by setting this value to an instance of
+Osgood::Client::EventList::Serialize::XML.
 
 =back
 
