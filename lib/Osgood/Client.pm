@@ -10,13 +10,13 @@ use CGI;
 
 use Osgood::EventList::Serialize::JSON;
 
-has 'error' => ( is => 'rw', iss => 'Str' );
+has 'error' => ( is => 'rw', isa => 'Str' );
 has 'url' => ( is => 'rw', isa => 'URI', default => sub { new URI('http://localhost'); });
 has 'list' => ( is => 'rw', isa => 'Osgood::EventList' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
 has 'serializer' => ( is => 'rw', isa => 'Osgood::EventList::Serialize', default => sub { new Osgood::EventList::Serialize::JSON() });
 
-our $VERSION = '1.1.1';
+our $VERSION = '1.1.2';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
@@ -139,11 +139,15 @@ A true or false value is returned to denote the success of failure of the
 query.  If false, then the error will be set in the error accessor.  On
 success the list may be retrived from the list accessor.
 
+Implicitly sets $self->list(undef), to clear previous results.
+
 =cut
 
 sub query {
 	my $self = shift();
 	my $params = shift();
+
+    $self->list(undef);
 
 	if((ref($params) ne 'HASH') || !scalar(keys(%{ $params }))) {
 		die('Must supply a hash of parameters to query.');
@@ -158,9 +162,7 @@ sub query {
 	my $res = $ua->request($req);
 
 	if($res->is_success()) {
-
 		$self->list($self->serializer->deserialize($res->content()));
-
 		return 1;
 	} else {
 		$self->error($res->status_line());
